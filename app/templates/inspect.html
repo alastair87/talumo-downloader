@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h2>{{ repo_id }} @ {{ revision }}</h2>
+  <p class="muted">{{ files|length }} files, {{ '{:.2f}'.format(total_size_bytes / 1024 / 1024 / 1024) }} GiB total.</p>
+  {% if not fits %}
+  <div class="alert warning">Estimated requirement including reserve threshold: {{ '{:.2f}'.format(required_bytes / 1024 / 1024 / 1024) }} GiB. Current free space is lower than that.</div>
+  {% endif %}
+  <form action="/downloads" method="post">
+    <input type="hidden" name="repo_id" value="{{ repo_id }}">
+    <input type="hidden" name="revision" value="{{ revision }}">
+    <input type="hidden" name="token" value="{{ token }}">
+    <input type="hidden" name="category" value="{{ category }}">
+    <div class="toolbar">
+      <input type="text" id="file-filter" placeholder="Filter paths, e.g. *.gguf or tokenizer">
+      <button type="button" data-select-pattern=".gguf">Select .gguf</button>
+      <button type="button" data-select-pattern=".safetensors">Select .safetensors</button>
+      <button type="button" data-select-pattern="tokenizer">Select tokenizer*</button>
+      <button type="button" id="select-all-files">Select all</button>
+      <button type="button" id="clear-all-files">Clear all</button>
+    </div>
+    <div class="checkbox-row">
+      <label>
+        <input type="checkbox" name="override_space_check" value="true">
+        Queue anyway if free-space reserve would be crossed
+      </label>
+    </div>
+    <div class="table-wrap">
+      <table id="repo-file-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Path</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Last Modified</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+          <tr data-path="{{ file.path }}">
+            <td><input type="checkbox" name="selected_files" value="{{ file.path }}"></td>
+            <td>{{ file.path }}</td>
+            <td>{{ file.extension }}</td>
+            <td>{{ '{:.2f}'.format(file.size_bytes / 1024 / 1024) }} MiB</td>
+            <td>{{ file.last_modified or 'n/a' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button type="submit">Queue Download</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

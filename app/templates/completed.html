@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h2>Completed Downloads</h2>
+  {% if not jobs %}
+  <p class="muted">Nothing completed yet.</p>
+  {% endif %}
+  {% for job in jobs %}
+  <article class="job-card">
+    <div class="section-header">
+      <div>
+        <h3>{{ job.repo_id }}</h3>
+        <p class="muted">{{ job.revision }} • {{ job.completed_at }}</p>
+      </div>
+      <a href="/downloads/{{ job.id }}/manifest">Manifest JSON</a>
+    </div>
+    <p><strong>Path:</strong> {{ job.target_path }}</p>
+    <p><strong>rsync:</strong> {{ build_rsync_command(job.target_path) }}</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Size</th>
+            <th>SHA-256</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in job.files %}
+          <tr>
+            <td>{{ file.path }}</td>
+            <td>{{ '{:.2f}'.format(file.size_bytes / 1024 / 1024) }} MiB</td>
+            <td>{{ file.sha256 or 'pending' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

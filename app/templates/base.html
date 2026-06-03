@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title or "HF Downloader" }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>HF Downloader</h1>
+        <p class="muted">Queue Hugging Face model downloads on your server, then sync them later over LAN.</p>
+      </div>
+      <nav>
+        <a href="/">New Job</a>
+        <a href="/queue">Queue</a>
+        <a href="/completed">Completed</a>
+      </nav>
+    </header>
+    <main class="layout">
+      {% block content %}{% endblock %}
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

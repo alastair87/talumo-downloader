@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <div class="section-header">
+    <h2>Queue</h2>
+    <p class="muted">Progress refreshes automatically.</p>
+  </div>
+  <div id="queue-jobs" data-queue-page="true"></div>
+  <noscript>
+    {% for job in jobs %}
+    <article class="job-card">
+      <h3>{{ job.repo_id }}</h3>
+      <p>Status: {{ job.status.value }}</p>
+    </article>
+    {% endfor %}
+  </noscript>
+</section>
+{% endblock %}

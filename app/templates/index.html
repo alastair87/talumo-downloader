@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h2>Inspect Repository</h2>
+  {% if error_message %}
+  <div class="alert error">{{ error_message }}</div>
+  {% endif %}
+  <form action="/repos/inspect" method="post" class="form-grid">
+    <label>
+      <span>Repo ID</span>
+      <input type="text" name="repo_id" placeholder="Qwen/Qwen2.5-7B-Instruct-GGUF" required>
+    </label>
+    <label>
+      <span>Revision</span>
+      <input type="text" name="revision" value="main">
+    </label>
+    <label>
+      <span>Category</span>
+      <input type="text" name="category" value="{{ default_category }}">
+    </label>
+    <label class="full-width">
+      <span>Hugging Face token</span>
+      <input type="password" name="token" placeholder="Optional; kept in memory for this job only">
+    </label>
+    <div class="full-width actions">
+      <button type="submit">Inspect Files</button>
+    </div>
+  </form>
+</section>
+
+<section class="stats-grid">
+  <article class="panel compact">
+    <h3>Disk Free</h3>
+    <strong>{{ '{:.2f}'.format(disk.free_bytes / 1024 / 1024 / 1024) }} GiB</strong>
+  </article>
+  <article class="panel compact">
+    <h3>Models Size</h3>
+    <strong>{{ '{:.2f}'.format(disk.models_size_bytes / 1024 / 1024 / 1024) }} GiB</strong>
+  </article>
+  <article class="panel compact">
+    <h3>Incomplete Size</h3>
+    <strong>{{ '{:.2f}'.format(disk.incomplete_size_bytes / 1024 / 1024 / 1024) }} GiB</strong>
+  </article>
+  <article class="panel compact">
+    <h3>HF Cache Size</h3>
+    <strong>{{ '{:.2f}'.format(disk.hf_cache_size_bytes / 1024 / 1024 / 1024) }} GiB</strong>
+  </article>
+</section>
+{% endblock %}
