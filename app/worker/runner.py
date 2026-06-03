@@ -26,6 +26,7 @@ class DownloadWorker:
         self._thread: threading.Thread | None = None
         self._executor: ThreadPoolExecutor | None = None
         self._futures: dict[str, Future[None]] = {}
+        self._job_repo_revision: dict[str, str] = {}  # job_id -> "repo_id:revision"
 
     def start(self) -> None:
         if self._thread and self._thread.is_alive():
@@ -66,6 +67,7 @@ class DownloadWorker:
         done_ids = [job_id for job_id, future in self._futures.items() if future.done()]
         for job_id in done_ids:
             future = self._futures.pop(job_id)
+            self._job_repo_revision.pop(job_id, None)
             try:
                 future.result()
             except Exception:
@@ -85,8 +87,12 @@ class DownloadWorker:
         for job in jobs:
             if job.id in self._futures:
                 continue
+            key = f"{job.repo_id}:{job.revision}"
+            if key in self._job_repo_revision.values():
+                continue
             if self._executor is None:
                 break
+            self._job_repo_revision[job.id] = key
             self._futures[job.id] = self._executor.submit(self._execute_job, job.id)
 
     def _execute_job(self, job_id: str) -> None:
