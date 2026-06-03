@@ -77,6 +77,18 @@ def create_download_job(
     if not selected:
         raise HTTPException(status_code=400, detail="Select at least one file")
 
+    active_statuses = [JobStatus.queued, JobStatus.downloading, JobStatus.paused, JobStatus.failed]
+    existing_job = db.scalar(
+        select(DownloadJob)
+        .where(DownloadJob.repo_id == repo_id, DownloadJob.revision == revision)
+        .where(DownloadJob.status.in_(active_statuses))
+    )
+    if existing_job is not None:
+        raise HTTPException(
+            status_code=409,
+            detail=f"A job for {repo_id}@{revision} is already active (status: {existing_job.status.value}).",
+        )
+
     total_bytes = sum(file.size_bytes for file in selected)
     fits, _, _ = can_fit_download(total_bytes)
     if not fits and not override_space_check:
