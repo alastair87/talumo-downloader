@@ -21,5 +21,6 @@ talumo_downloader.egg-info/dependency_links.txt
 talumo_downloader.egg-info/requires.txt
 talumo_downloader.egg-info/top_level.txt
 tests/test_downloader.py
+tests/test_duplicate_guard.py
 tests/test_state_machine.py
 tests/test_storage.py
